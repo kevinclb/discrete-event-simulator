@@ -16,11 +16,11 @@ import time
 observer_event_times = []
 arrival_event_times = []
 departure_event_times = []
-array_of_packets = []
+array_of_packets = []# should be randomly generated
 count = 0
-i = 0
-j = 0
-k = 0
+i = 0 #arrival counter
+j = 0 #departure counter
+k = 0 #observer counter
 
 for i in range(1000):
     observer_event_times.append(np.random.exponential(1/1000))
@@ -34,6 +34,8 @@ for i in range(1000):
 while count < 1000:
     if arrival_event_times[i] < departure_event_times[j] and arrival_event_times[i] < observer_event_times[k]:
         ## increment 1 to arrivals, increment 1 to the counter i
+        i+=1
+        count+=1
     ## elif take the minimum of the next time
         ## check if theres any packets in the queue
 print(observer_event_times)
