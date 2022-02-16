@@ -42,11 +42,12 @@ class Packet:
 observer_event_times = []
 arrival_event_times = []
 departure_event_times = []
+array_of_packets = [] # should be randomly generated
 array_of_events = []
 count = 0
-i = 0
-j = 0
-k = 0
+i = 0 #arrival counter
+j = 0 #departure counter
+k = 0 #observer counter
 
 # Generating the times and populating their respective arrays
 # TODO: These are temporary lambda's, fix later
@@ -60,6 +61,8 @@ for i in range(5000):
 while count < 3000:
     if arrival_event_times[i] < departure_event_times[j] and arrival_event_times[i] < observer_event_times[k]:
         ## increment 1 to arrivals, increment 1 to the counter i
+        i+=1
+        count+=1
     ## elif take the minimum of the next time
         ## check if theres any packets in the queue
 print(observer_event_times)
