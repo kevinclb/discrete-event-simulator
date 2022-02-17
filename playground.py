@@ -5,12 +5,10 @@ import numpy as np
 from scipy.stats import poisson
 import statistics as stats
 
-number = np.random.exponential(1 / 385, 100000)
-number_poisson = np.random.poisson(75, 10)
+# number = np.random.exponential(1 / 385, 100000)
 
 
 number2 = np.random.exponential(1 / 75, 10000)
-print(number_poisson)
-print(stats.mean(number_poisson))
-
-print(stats.mean(number2))
+# print(stats.mean(number_poisson))
+#
+# print(stats.mean(number2))

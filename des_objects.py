@@ -1,6 +1,7 @@
 import numpy as np
 
 
+
 class SimulatorMM1:  # The answer to question 2 is this simulator
     def __init__(self):  # This simulator declares the necessary variables
         self.arrivals = 0
@@ -29,7 +30,6 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
                 e = Event("departure", departure_time)
                 e.set_length(event.length)
                 self.events.append(e)
-
             else:
                 pass
 
@@ -55,9 +55,11 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         self.observations += 1
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
-            self.snapshots.append({"number of packets at observation " + str(self.observations)+ ": " : self.arrivals - self.departures})
+            self.snapshots.append(
+                {"number of packets at observation " + str(self.observations) + ": ": self.arrivals - self.departures})
         else:
-            self.snapshots.append({"number of packets at observation "+ str(self.observations)+ ": ": self.arrivals - self.departures})
+            self.snapshots.append(
+                {"number of packets at observation " + str(self.observations) + ": ": self.arrivals - self.departures})
         print("observation event handled")
 
 
@@ -78,9 +80,9 @@ class Event:  # Event class: has variables type, time,
 sim = SimulatorMM1()
 
 print("generated and sorted (by time) events: ")
-for i in range(10):  # generating arrival events,
+for i in range(1000):  # generating arrival events,
     sim.generate_arrival_events()  # observation events,
-for i in range(30):  # and departure events
+for i in range(5000):  # and departure events
     sim.generate_observation_events()
 sim.generate_departure_events(sim.events)
 sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events by time
@@ -94,4 +96,4 @@ for i in range(len(sim.events)):  # de-queueing each event (popping the event at
 for snapshot in sim.snapshots:  # printing the log of snapshots from each observer event
     print(snapshot)
 
-print(sim.arrivals, " ", sim.departures)
+print("total number of arrivals: " + str(sim.arrivals) + "   total number of departures: " + str(sim.departures))
