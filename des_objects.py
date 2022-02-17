@@ -55,9 +55,9 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         self.observations += 1
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
-            self.snapshots.append({"number of packets at observation event: ": self.arrivals - self.departures})
+            self.snapshots.append({"number of packets at observation " + str(self.observations)+ ": " : self.arrivals - self.departures})
         else:
-            self.snapshots.append({"number of packets at observation event: ": self.arrivals - self.departures})
+            self.snapshots.append({"number of packets at observation "+ str(self.observations)+ ": ": self.arrivals - self.departures})
         print("observation event handled")
 
 
