@@ -1,7 +1,6 @@
 import numpy as np
-from collections import deque as dq
-import time
 import statistics as stat
+import des_objects as des
 
 # Question 1:
 
@@ -15,7 +14,10 @@ while count < 1000:
 #     print(i)
 mean = stat.mean(var_list)
 variance = stat.variance(var_list)
-print(mean)
-print(variance)
+# print(mean)
+# print(variance)
 
 # Question 2:
+
+# See "des_objects.py" for the simulation of M/M/1 queue.
+# TODO: We have to write a detailed description (along with maybe some diagrams) of our code.
