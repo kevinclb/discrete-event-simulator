@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 class SimulatorMM1:  # The answer to question 2 is this simulator
     def __init__(self):  # This simulator declares the necessary variables
         self.arrivals = 0
@@ -24,12 +23,22 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
     def generate_departure_events(self, events: list):  # generating departure events based upon
         for event in events:  # the computed service time of the existing
             if event.type == "arrival":  # arrival events,
-                service_time = event.length / 1000000  # which is found by dividing L (random packet length
-                departure_time = event.time + service_time  # with average 2000) by C (1 Mbps = 1000000)
-                self.prev_departure_time = departure_time
-                e = Event("departure", departure_time)
-                e.set_length(event.length)
-                self.events.append(e)
+                if self.prev_departure_time <= event.time:  # queue is empty
+                    service_time = event.length / 1000000  # which is found by dividing L (random packet length
+                    event.set_service_time(service_time)
+                    departure_time = event.time + service_time  # with average 2000) by C (1 Mbps = 1000000)
+                    self.prev_departure_time = departure_time
+                    e = Event("departure", departure_time)
+                    e.set_length(event.length)
+                    self.events.append(e)
+                else:
+                    service_time = event.length / 1000000
+                    event.set_service_time(service_time)
+                    departure_time = self.prev_departure_time + service_time
+                    self.prev_departure_time = departure_time
+                    e = Event("departure", departure_time)
+                    e.set_length(event.length)
+                    self.events.append(e)
             else:
                 pass
 
@@ -56,11 +65,17 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
             self.snapshots.append(
-                {"number of packets at observation " + str(self.observations) + ": ": self.arrivals - self.departures})
+                {self.observations: self.arrivals - self.departures})
         else:
             self.snapshots.append(
-                {"number of packets at observation " + str(self.observations) + ": ": self.arrivals - self.departures})
+                {self.observations: self.arrivals - self.departures})
         print("observation event handled")
+
+    def tabulate_results(self):
+        print("{:<17} {:<30} {:<35} {:<10}".format('Event Type', 'Event Time', 'Service Time', 'Packet Length'))
+        print("{:<17} {:<30} {:<35} {:<10}".format('-----------', '---------------', '---------------', '------------'))
+        for event in self.events:
+            print("{:<17} {:<30} {:<35} {:<10}".format(event.type, event.time, event.service_time, event.length))
 
 
 class Event:  # Event class: has variables type, time,
@@ -68,13 +83,13 @@ class Event:  # Event class: has variables type, time,
         self.type = event_type
         self.time = event_time
         self.length = 0
-
-    def __str__(self):  # for returning a string representation of
-        return "event type: " + str(self.type) + "        time: " + str(self.time) + "      packet length: " + str(
-            self.length)
+        self.service_time = 0
 
     def set_length(self, packet_length):
         self.length = packet_length
+
+    def set_service_time(self, service_time):
+        self.service_time = service_time
 
 
 sim = SimulatorMM1()
@@ -87,13 +102,10 @@ for i in range(5000):  # and departure events
 sim.generate_departure_events(sim.events)
 sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events by time
 
-for event in sim.events:  # printing the contents of each event (for double-checking)
-    print(str(event))
+sim.tabulate_results()
 
 for i in range(len(sim.events)):  # de-queueing each event (popping the event at the 0th index)
     sim.deque_events(sim.events.pop(0))
 
 for snapshot in sim.snapshots:  # printing the log of snapshots from each observer event
     print(snapshot)
-
-print("total number of arrivals: " + str(sim.arrivals) + "   total number of departures: " + str(sim.departures))
