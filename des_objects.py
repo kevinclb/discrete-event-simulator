@@ -2,43 +2,48 @@ import numpy as np
 
 
 class SimulatorMM1:  # The answer to question 2 is this simulator
-    def __init__(self):  # This simulator declares the necessary variables
-        self.arrivals = 0
-        self.departures = 0
-        self.observations = 0
-        self.idle_counter = 0
-        self.prev_departure_time = 0
-        self.prev_service_time = 0
-        self.events = []
-        self.snapshots = []
+    def __init__(self, transmission_rate, link_rate, average_length):  # This simulator declares the necessary variables
+        self.arrivals = 0               # keeps track of number of packets which have arrived in the queue
+        self.departures = 0             # keeps track of the number of packets which have left the queue
+        self.observations = 0           # keeps track of the number of observer events
+        self.idle_counter = 0           # keeps track of number of times the queue is empty
+        self.prev_departure_time = 0    # keeps track of the previous departure time, so we can generate the next one
+        self.link_rate = link_rate      # Link rate in Mbps
+        self.events = []                # queue of events containing Event object (arrival, departure or observer)
+        self.snapshots = []             # list containing snapshots of relevant data from simulator
+        self.rate = transmission_rate   # transmission rate, defined as lambda in the assignment doc
+        self.average_packet_length = average_length     # sets the average packet length (L) to the given average length
 
-    def generate_arrival_events(self):  # generating random arrival events with lambda = 75
-        e = Event("arrival", np.random.exponential(1 / 75))
-        e.set_length(np.random.exponential(2000))  # giving them a random length with average 2000 size
-        self.events.append(e)  # appending them to the events queue
+    def generate_arrival_events(self):                  # generating random arrival events with lambda = self.rate
+        e = Event("arrival", np.random.exponential(1 / self.rate))
+        e.set_length(self.generate_random_length())     # giving them a random length with average 2000 size
+        self.events.append(e)                           # appending them to the events queue
+
+    def generate_random_length(self):
+        return np.random.exponential(self.average_packet_length)
 
     def generate_observation_events(self):
-        self.events.append(Event("observer", np.random.exponential(1 / 25)))
+        self.events.append(Event("observer", np.random.exponential(1 / (self.rate / 5))))
 
-    def generate_departure_events(self, events: list):  # generating departure events based upon
-        for event in events:  # the computed service time of the existing
-            if event.type == "arrival":  # arrival events,
-                service_time = event.length / 1000000  # which is found by dividing L (random packet length
-                event.set_service_time(service_time)
-                if event.time + event.service_time > self.prev_departure_time:  # queue is empty
-                    departure_time = event.time + event.service_time  # with average 2000) by C (1 Mbps = 1000000)
-                    self.prev_departure_time = departure_time
-                    e = Event("departure", departure_time)
-                    e.set_length(event.length)
-                    self.events.append(e)
+    def generate_departure_events(self, events: list):        # generating departure events based upon
+        for event in events:                                  # the computed service time of the existing
+            if event.type == "arrival":                       # arrival events,
+                service_time = event.length / self.link_rate  # which is found by dividing L (random packet length)
+                event.set_service_time(service_time)          # by C (the link rate, self.link_rate)
+                if event.time + event.service_time > self.prev_departure_time:  # if this packet's (event) arrival time
+                    departure_time = event.time + event.service_time            # and it's service time is greater than
+                    self.prev_departure_time = departure_time                   # the previous packet's departure time,
+                    e = Event("departure", departure_time)                      # then this packet's departure time
+                    e.set_length(event.length)                                  # is based on only this packet's
+                    self.events.append(e)                                       # arrival time + service time
                 else:
-                    departure_time = self.prev_departure_time + event.service_time
-                    self.prev_departure_time = departure_time
-                    e = Event("departure", departure_time)
-                    e.set_length(event.length)
-                    self.events.append(e)
-            else:
-                pass
+                    departure_time = self.prev_departure_time + event.service_time  # else, this packet's departure time
+                    self.prev_departure_time = departure_time                       # is based on the previous packet's
+                    e = Event("departure", departure_time)                          # departure time + this packet's
+                    e.set_length(event.length)                                      # service time. Either way,
+                    self.events.append(e)                                           # set the prev departure time to
+            else:                                                                   # this departure time and copy the
+                pass                                                                # packet's length to this length
 
     def deque_events(self, event):
         if event.type == "arrival":
@@ -90,7 +95,7 @@ class Event:  # Event class: has variables type, time,
         self.service_time = service_time
 
 
-sim = SimulatorMM1()
+sim = SimulatorMM1(75, 1000000, 2000)       # rate of lambda = 75 gives rho of .15, lambda = 125 gives rho .25, etc..
 
 print("generated and sorted (by time) events: ")
 for i in range(1000):  # generating arrival events,
@@ -102,7 +107,6 @@ sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the even
 sim.generate_departure_events(sim.events)
 sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events again, after adding the departures
 
-
 sim.tabulate_results()
 
 for i in range(len(sim.events)):  # de-queueing each event (popping the event at the 0th index)
@@ -110,4 +114,6 @@ for i in range(len(sim.events)):  # de-queueing each event (popping the event at
 
 print("Observer Event Log")
 for snapshot in sim.snapshots:  # printing the log of snapshots from each observer event
-    print("{:<30} {:<30} {:<35} {:<30}".format("Observer Event: " + str(snapshot[0]), "Packets in Queue: " + str(snapshot[1]), "Arrivals: " + str(snapshot[2]), "Departures: " + str(snapshot[3])))
+    print("{:<30} {:<30} {:<35} {:<30}".format("Observer Event: " + str(snapshot[0]),
+                                               "Packets in Queue: " + str(snapshot[1]), "Arrivals: " + str(snapshot[2]),
+                                               "Departures: " + str(snapshot[3])))
