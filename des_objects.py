@@ -52,22 +52,22 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
 
     def handle_arrival_event(self):
         self.arrivals += 1
-        print("arrival event handled")
+        # print("arrival event handled")
 
     def handle_departure_event(self):
         self.departures += 1
-        print("departure event handled")
+        # print("departure event handled")
 
     def handle_observation_event(self):
         self.observations += 1
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
             self.snapshots.append(
-                {"At observer event : " + str(self.observations): ["Arrivals - departures: ", self.arrivals - self.departures, "arrivals:", self.arrivals, "departures:", self.departures]})
+                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures])
         else:
             self.snapshots.append(
-                {"At observer event : " + str(self.observations): ["Arrivals - departures: ", self.arrivals - self.departures, "arrivals:", self.arrivals, "departures:", self.departures]})
-        print("observation event handled")
+                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures])
+        # print("observation event handled")
 
     def tabulate_results(self):
         print("{:<17} {:<30} {:<35} {:<10}".format('Event Type', 'Event Time', 'Service Time', 'Packet Length'))
@@ -108,5 +108,6 @@ sim.tabulate_results()
 for i in range(len(sim.events)):  # de-queueing each event (popping the event at the 0th index)
     sim.deque_events(sim.events.pop(0))
 
+print("Observer Event Log")
 for snapshot in sim.snapshots:  # printing the log of snapshots from each observer event
-    print(snapshot)
+    print("{:<30} {:<30} {:<35} {:<30}".format("Observer Event: " + str(snapshot[0]), "Packets in Queue: " + str(snapshot[1]), "Arrivals: " + str(snapshot[2]), "Departures: " + str(snapshot[3])))
