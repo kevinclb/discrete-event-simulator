@@ -18,23 +18,21 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         self.events.append(e)  # appending them to the events queue
 
     def generate_observation_events(self):
-        self.events.append(Event("observer", np.random.exponential(1 / 75)))
+        self.events.append(Event("observer", np.random.exponential(1 / 25)))
 
     def generate_departure_events(self, events: list):  # generating departure events based upon
         for event in events:  # the computed service time of the existing
             if event.type == "arrival":  # arrival events,
-                if self.prev_departure_time <= event.time:  # queue is empty
-                    service_time = event.length / 1000000  # which is found by dividing L (random packet length
-                    event.set_service_time(service_time)
-                    departure_time = event.time + service_time  # with average 2000) by C (1 Mbps = 1000000)
+                service_time = event.length / 1000000  # which is found by dividing L (random packet length
+                event.set_service_time(service_time)
+                if event.time + event.service_time > self.prev_departure_time:  # queue is empty
+                    departure_time = event.time + event.service_time  # with average 2000) by C (1 Mbps = 1000000)
                     self.prev_departure_time = departure_time
                     e = Event("departure", departure_time)
                     e.set_length(event.length)
                     self.events.append(e)
                 else:
-                    service_time = event.length / 1000000
-                    event.set_service_time(service_time)
-                    departure_time = self.prev_departure_time + service_time
+                    departure_time = self.prev_departure_time + event.service_time
                     self.prev_departure_time = departure_time
                     e = Event("departure", departure_time)
                     e.set_length(event.length)
@@ -65,10 +63,10 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
             self.snapshots.append(
-                {self.observations: self.arrivals - self.departures})
+                {"At observer event : " + str(self.observations): ["Arrivals - departures: ", self.arrivals - self.departures, "arrivals:", self.arrivals, "departures:", self.departures]})
         else:
             self.snapshots.append(
-                {self.observations: self.arrivals - self.departures})
+                {"At observer event : " + str(self.observations): ["Arrivals - departures: ", self.arrivals - self.departures, "arrivals:", self.arrivals, "departures:", self.departures]})
         print("observation event handled")
 
     def tabulate_results(self):
@@ -99,8 +97,11 @@ for i in range(1000):  # generating arrival events,
     sim.generate_arrival_events()  # observation events,
 for i in range(5000):  # and departure events
     sim.generate_observation_events()
-sim.generate_departure_events(sim.events)
+
 sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events by time
+sim.generate_departure_events(sim.events)
+sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events again, after adding the departures
+
 
 sim.tabulate_results()
 
