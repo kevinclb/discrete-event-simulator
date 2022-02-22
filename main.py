@@ -1,6 +1,5 @@
 import numpy as np
 import statistics as stat
-import des_objects as des
 
 # Question 1:
 
@@ -19,5 +18,5 @@ variance = stat.variance(var_list)
 
 # Question 2:
 
-# See "des_objects.py" for the simulation of M/M/1 queue.
+# See "des_mm1.py" for the simulation of M/M/1 queue.
 # TODO: We have to write a detailed description (along with maybe some diagrams) of our code.
