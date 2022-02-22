@@ -13,6 +13,7 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         self.snapshots = []  # list containing snapshots of relevant data from simulator
         self.rate = transmission_rate  # transmission rate, defined as lambda in the assignment doc
         self.average_packet_length = average_length  # sets the average packet length (L) to the given average length
+        self.total_idle_time = 0
 
     def generate_arrival_events(self):  # generating random arrival events with lambda = self.rate
         e = Event("arrival", np.random.exponential(1 / self.rate))
@@ -64,14 +65,17 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         # print("departure event handled")
 
     def handle_observation_event(self):
+
+        ## TODO: increment self.total_idle_time
         self.observations += 1
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
             self.snapshots.append(
-                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures])
-        else:
+                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures]) ##TODO: add prev arrival time element
+        else:                                                                                         ##so that we can calculate total idle time
             self.snapshots.append(
-                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures])
+                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures]) ##TODO: add prev arrival time element
+                                                                                                      ##so that we can calculate total idle time
         # print("observation event handled")
 
     def tabulate_results(self):
