@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 class SimulatorMM1:  # The answer to question 2 is this simulator
     def __init__(self, transmission_rate, link_rate, average_length):  # This simulator declares the necessary variables
@@ -30,7 +30,7 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
             if event.type == "arrival":  # arrival events,
                 service_time = event.length / self.link_rate  # which is found by dividing L (random packet length)
                 event.set_service_time(service_time)  # by C (the link rate, self.link_rate)
-                if event.time + event.service_time > self.prev_departure_time:  # if this packet's (event) arrival time
+                if event.time > self.prev_departure_time:  # if this packet's (event) arrival time
                     departure_time = event.time + event.service_time  # and it's service time is greater than
                     self.prev_departure_time = departure_time  # the previous packet's departure time,
                     e = Event("departure", departure_time)  # then this packet's departure time
@@ -95,7 +95,7 @@ class Event:  # Event class: has variables type, time,
         self.service_time = service_time
 
 
-sim = SimulatorMM1(75, 1000000, 2000)  # rate of lambda = 75 gives rho of .15, lambda = 125 gives rho .25, etc..
+sim = SimulatorMM1(125, 1000000, 2000)  # rate of lambda = 75 gives rho of .15, lambda = 125 gives rho .25, etc..
 
 print("generated and sorted (by time) events: ")
 for i in range(1000):  # generating arrival events,
@@ -118,4 +118,21 @@ for snapshot in sim.snapshots:  # printing the log of snapshots from each observ
                                                "Packets in Queue: " + str(snapshot[1]), "Arrivals: " + str(snapshot[2]),
                                                "Departures: " + str(snapshot[3])))
 
+print("total arrivals: ", sim.arrivals)
+print("total departures: ", sim.departures)
 print("Idle counter: " + str(sim.idle_counter))
+
+'''
+Creating graphing statements for the graphs here 
+x is ro and y is avg num of events at a given time
+#import mathplotlib.pyplot as plt
+x = np.arrange(0.25,0.95,0.1)
+y = np.zeros((np.size(x), 0.1))
+#x and y here are placeholders for now, they should take the information provided in queue sim
+graph = plt.figure(143)#value inside is random, but can never have a duplicate value so generating plots wont cause errors
+plt.plot(x,y)
+plt.title('Simulation Results Question 3A')
+plt.xlabel('Avg Packets in System')
+plt.ylabel('Traffic Intensity rho(p)')
+plot.show()
+'''
