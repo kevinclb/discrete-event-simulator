@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class SimulatorMM1:  # The answer to question 2 is this simulator
     def __init__(self, transmission_rate, link_rate, average_length):  # This simulator declares the necessary variables
         self.arrivals = 0  # keeps track of number of packets which have arrived in the queue
@@ -66,16 +67,13 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
 
     def handle_observation_event(self):
 
-        ## TODO: increment self.total_idle_time
+        # TODO: increment self.total_idle_time
         self.observations += 1
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
-            self.snapshots.append(
-                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures]) ##TODO: add prev arrival time element
-        else:                                                                                         ##so that we can calculate total idle time
-            self.snapshots.append(
-                [self.observations, self.arrivals - self.departures, self.arrivals, self.departures]) ##TODO: add prev arrival time element
-                                                                                                      ##so that we can calculate total idle time
+        self.snapshots.append(
+            [self.observations, self.arrivals - self.departures, self.arrivals,
+             self.departures])  # TODO: add prev arrival time element
         # print("observation event handled")
 
     def tabulate_results(self):
