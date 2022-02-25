@@ -131,6 +131,10 @@ class SimulatorMM1K:
             self.idle_counter += 1
             self.total_idle_time += abs(event.time - self.event_log[len(self.event_log) - 1][1])
         # TODO: add metrics to self.snapshot list here
+        # TODO: if you want to capture more metrics, you can either use the
+        # TODO: event_log list defined in the simulator, or the snapshots list
+        # TODO: if you use the event log list, you have to rewrite every self.event_log.append()
+        # TODO: statement to accurately reflect the new metrics you want to capture.
 
     # run the simulation with this function.
     def run_simulation(self):
