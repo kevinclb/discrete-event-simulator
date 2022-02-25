@@ -96,6 +96,21 @@ class Event:  # Event class: has variables type, time,
     def set_service_time(self, service_time):
         self.service_time = service_time
 
+'''
+Calculating lambda based on specified rho range of 0.25 < p < 0.95
+Each simulation will be ran via these lambda values to then find E[N]
+E[N] is the "time-average number of packets in the queue
+
+X-Axis: Rho
+Y-Axis: E[N]
+'''
+rho_values = np.arange(0.25, 1, 0.1)
+lambda_values = []
+
+for i in range(rho_values.__len__()):
+    lambda_values.append(int(rho_values[i] * (1000000/2000)))
+
+print("Lambda Values: ", lambda_values)
 
 sim = SimulatorMM1(125, 1000000, 2000)  # rate of lambda = 75 gives rho of .15, lambda = 125 gives rho .25, etc..
 
@@ -114,7 +129,7 @@ sim.tabulate_results()
 for i in range(len(sim.events)):  # de-queueing each event (popping the event at the 0th index)
     sim.deque_events(sim.events.pop(0))
 
-print("Observer Event Log")
+print("\nObserver Event Log\n")
 for snapshot in sim.snapshots:  # printing the log of snapshots from each observer event
     print("{:<30} {:<30} {:<35} {:<30}".format("Observer Event: " + str(snapshot[0]),
                                                "Packets in Queue: " + str(snapshot[1]), "Arrivals: " + str(snapshot[2]),
@@ -127,6 +142,8 @@ print("Idle counter: " + str(sim.idle_counter))
 '''
 Creating graphing statements for the graphs here 
 x is ro and y is avg num of events at a given time
+We have to calculate lambda over a series of rho (0.35 to 0.85)
+To do so, lambda = rho(C/L)
 #import mathplotlib.pyplot as plt
 x = np.arrange(0.25,0.95,0.1)
 y = np.zeros((np.size(x), 0.1))
