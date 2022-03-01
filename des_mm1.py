@@ -14,7 +14,8 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         self.snapshots = []  # list containing snapshots of relevant data from simulator
         self.rate = transmission_rate  # transmission rate, defined as lambda in the assignment doc
         self.average_packet_length = average_length  # sets the average packet length (L) to the given average length
-        self.total_idle_time = 0
+        self.total_time = 0
+        self.total_packets = 0
 
     def generate_arrival_events(self):  # generating random arrival events with lambda = self.rate
         e = Event("arrival", np.random.exponential(1 / self.rate))
@@ -25,7 +26,7 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         return np.random.exponential(self.average_packet_length)
 
     def generate_observation_events(self):
-        self.events.append(Event("observer", np.random.exponential(1 / (self.rate / 5))))
+        self.events.append(Event("observer", np.random.exponential(1 / (self.rate * 5))))
 
     def generate_departure_events(self, events: list):  # generating departure events based upon
         for event in events:  # the computed service time of the existing
@@ -49,10 +50,12 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
 
     def deque_events(self, event):
         if event.type == "arrival":
+            self.total_time += event.time
             self.handle_arrival_event()
         elif event.type == "departure":
             self.handle_departure_event()
         elif event.type == "observer":
+            self.total_time += event.time
             self.handle_observation_event()
         else:
             print("Event type not recognized. Moving on to next event.")
@@ -66,15 +69,35 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         # print("departure event handled")
 
     def handle_observation_event(self):
-
-        # TODO: increment self.total_idle_time
         self.observations += 1
         if self.arrivals == self.departures:
             self.idle_counter += 1  # if queue is empty, we are incrementing the idle counter.
         self.snapshots.append(
             [self.observations, self.arrivals - self.departures, self.arrivals,
-             self.departures])  # TODO: add prev arrival time element
+             self.departures, self.idle_counter])
         # print("observation event handled")
+
+    def run_simulation(self, number):
+        for i in range(number):
+            self.generate_arrival_events()
+            self.generate_observation_events()
+        self.events.sort(key=lambda event: event.time, reverse=False)
+        self.generate_departure_events(self.events)
+        self.events.sort(key=lambda event: event.time, reverse=False)
+
+        self.tabulate_results()
+        for i in range(len(self.events)):
+            e = self.events.pop(0)
+            self.deque_events(e)
+
+    def get_en(self):
+        for snapshot in self.snapshots:
+            self.total_packets += snapshot[1]
+        En = self.total_packets / self.observations
+        return En
+
+    def get_pidle(self):
+        return self.idle_counter / self.observations
 
     def tabulate_results(self):
         print("{:<17} {:<30} {:<35} {:<10}".format('Event Type', 'Event Time', 'Service Time', 'Packet Length'))
@@ -96,62 +119,48 @@ class Event:  # Event class: has variables type, time,
     def set_service_time(self, service_time):
         self.service_time = service_time
 
-'''
-Calculating lambda based on specified rho range of 0.25 < p < 0.95
-Each simulation will be ran via these lambda values to then find E[N]
-E[N] is the "time-average number of packets in the queue
 
-X-Axis: Rho
-Y-Axis: E[N]
-'''
-rho_values = np.arange(0.25, 1, 0.1)
-lambda_values = []
+# '''
+# Calculating lambda based on specified rho range of 0.25 < p < 0.95
+# Each simulation will be ran via these lambda values to then find E[N]
+# E[N] is the "time-average number of packets in the queue
+#
+# X-Axis: Rho
+# Y-Axis: E[N]
+# '''
+# rho_values = np.arange(0.25, 1, 0.1)
+# lambda_values = []
 
-for i in range(rho_values.__len__()):
-    lambda_values.append(int(rho_values[i] * (1000000/2000)))
+# for i in range(rho_values.__len__()):
+#     lambda_values.append(int(rho_values[i] * (1000000 / 2000)))
+#
+# print("Lambda Values: ", lambda_values)
+list_of_Ens = []
+list_of_Pidles = []
 
-print("Lambda Values: ", lambda_values)
+# TODO: Wrap the simulator in a loop and extract the data.
 
 sim = SimulatorMM1(125, 1000000, 2000)  # rate of lambda = 75 gives rho of .15, lambda = 125 gives rho .25, etc..
 
-print("generated and sorted (by time) events: ")
-for i in range(1000):  # generating arrival events,
-    sim.generate_arrival_events()  # observation events,
-for i in range(5000):  # and departure events
-    sim.generate_observation_events()
+sim.run_simulation(1000)
+for snapshot in sim.snapshots:
+    print(snapshot)
+E1 = sim.get_en()
+Pidle1 = sim.get_pidle()
 
-sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events by time
-sim.generate_departure_events(sim.events)
-sim.events.sort(key=lambda event: event.time, reverse=False)  # sorting the events again, after adding the departures
-
-sim.tabulate_results()
-
-for i in range(len(sim.events)):  # de-queueing each event (popping the event at the 0th index)
-    sim.deque_events(sim.events.pop(0))
-
-print("\nObserver Event Log\n")
-for snapshot in sim.snapshots:  # printing the log of snapshots from each observer event
-    print("{:<30} {:<30} {:<35} {:<30}".format("Observer Event: " + str(snapshot[0]),
-                                               "Packets in Queue: " + str(snapshot[1]), "Arrivals: " + str(snapshot[2]),
-                                               "Departures: " + str(snapshot[3])))
-
-print("total arrivals: ", sim.arrivals)
-print("total departures: ", sim.departures)
-print("Idle counter: " + str(sim.idle_counter))
-
-'''
-Creating graphing statements for the graphs here 
-x is ro and y is avg num of events at a given time
-We have to calculate lambda over a series of rho (0.35 to 0.85)
-To do so, lambda = rho(C/L)
-#import mathplotlib.pyplot as plt
-x = np.arrange(0.25,0.95,0.1)
-y = np.zeros((np.size(x), 0.1))
-#x and y here are placeholders for now, they should take the information provided in queue sim
-graph = plt.figure(143)#value inside is random, but can never have a duplicate value so generating plots wont cause errors
-plt.plot(x,y)
-plt.title('Simulation Results Question 3A')
-plt.xlabel('Avg Packets in System')
-plt.ylabel('Traffic Intensity rho(p)')
-plot.show()
-'''
+# '''
+# Creating graphing statements for the graphs here
+# x is ro and y is avg num of events at a given time
+# We have to calculate lambda over a series of rho (0.35 to 0.85)
+# To do so, lambda = rho(C/L)
+# #import mathplotlib.pyplot as plt
+# x = np.arrange(0.25,0.95,0.1)
+# y = np.zeros((np.size(x), 0.1))
+# #x and y here are placeholders for now, they should take the information provided in queue sim
+# graph = plt.figure(143)#value inside is random, but can never have a duplicate value so generating plots wont cause errors
+# plt.plot(x,y)
+# plt.title('Simulation Results Question 3A')
+# plt.xlabel('Avg Packets in System')
+# plt.ylabel('Traffic Intensity rho(p)')
+# plot.show()
+# '''

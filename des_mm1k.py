@@ -45,6 +45,7 @@ class SimulatorMM1K:
         self.transmission_rate = transmission_rate
         self.latest_departure = 0
         self.buffer_limit = buffer_size
+        # TODO: keep track of packet loss
 
     # generate_arrival_events() is a function that takes an integer number as a parameter
     # then, it creates that number of arrival packets with random exponential arrival times
@@ -73,7 +74,7 @@ class SimulatorMM1K:
     # then, it generates a departure event with a departure time that is dependent
 
     def handle_arrival_events(self, event):
-        self.total_time += abs(event.time - self.total_time)
+        self.total_time += abs(event.time)
 
         # if the queue is full, drop the packet, increment the drop counter,
         # and create a log of the drop in the event log
@@ -117,6 +118,7 @@ class SimulatorMM1K:
     # and adds a departure event to the event log.
     def handle_departure_events(self, event):
         self.departures += 1
+        self.total_time += event.time
         self.event_log.append(["departure " + str(self.departures), event.time])
 
     # handle_observer_events() increments the observation counter,
@@ -125,16 +127,12 @@ class SimulatorMM1K:
     # record the appropriate idle time metrics.
     def handle_observer_events(self, event):
         self.observations += 1
+        self.total_time += event.time
         self.event_log.append(["observer " + str(self.observations + 1), event.time])
         # if the queue is empty, increment idle counter
         if self.arrivals - self.departures == 0:
             self.idle_counter += 1
-            self.total_idle_time += abs(event.time - self.event_log[len(self.event_log) - 1][1])
-        # TODO: add metrics to self.snapshot list here
-        # TODO: if you want to capture more metrics, you can either use the
-        # TODO: event_log list defined in the simulator, or the snapshots list
-        # TODO: if you use the event log list, you have to rewrite every self.event_log.append()
-        # TODO: statement to accurately reflect the new metrics you want to capture.
+        # TODO: Keep track of packet loss
 
     # run the simulation with this function.
     def run_simulation(self):
@@ -179,8 +177,8 @@ class SimulatorMM1K:
 
 
 sim = SimulatorMM1K(transmission_rate=1000000, link_rate=2000, buffer_size=10)
-sim.generate_arrival_events(number=10000, lamda=75)
-sim.generate_observer_events(number=50000, lamda=75)
+sim.generate_arrival_events(number=100000, lamda=125)
+sim.generate_observer_events(number=100000, lamda=125)
 sim.events.sort(key=lambda item: item.get_time())
 sim.run_simulation()
 sim.print_event_log()
