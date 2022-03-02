@@ -33,7 +33,7 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
             if event.type == "arrival":  # arrival events,
                 service_time = event.length / self.link_rate  # which is found by dividing L (random packet length)
                 event.set_service_time(service_time)  # by C (the link rate, self.link_rate)
-                if event.time > self.prev_departure_time:  # if this packet's (event) arrival time
+                if event.time + event.service_time > self.prev_departure_time:  # if this packet's (event) arrival time
                     departure_time = event.time + event.service_time  # and it's service time is greater than
                     self.prev_departure_time = departure_time  # the previous packet's departure time,
                     e = Event("departure", departure_time)  # then this packet's departure time
@@ -55,7 +55,6 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         elif event.type == "departure":
             self.handle_departure_event()
         elif event.type == "observer":
-            self.total_time += event.time
             self.handle_observation_event()
         else:
             print("Event type not recognized. Moving on to next event.")
