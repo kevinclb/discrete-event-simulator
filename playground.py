@@ -43,7 +43,25 @@
 # list.sort(key=lambda item: item.get_time())
 # for i in list:
 #     print(i)
+# d = {'a': 0, 'b': 1, 'c': 2}
+# values = list(d.items())
+# print(values[len(values)-1][1])
+import random
+import math
+import numpy as np
+import statistics as stats
+#
 
-d = {'a': 0, 'b': 1, 'c': 2}
-values = list(d.items())
-print(values[len(values)-1][1])
+lam = 125
+list1 = []
+list2 = []
+list3 = []
+for i in range(1000):
+    r = random.uniform(0, 1)
+    list1.append(-((1 / lam) * math.log(1 - r)))
+    list2.append(np.random.exponential(1 / 125))
+    list3.append(np.random.exponential(1 / (125 * 5)))
+
+print("mean list 1 (explicit formula) : ", stats.mean(list1))
+print("mean list 2 (np.random.exponential) : ", stats.mean(list2))
+print("mean list 3 (np.random.exponential) : ", stats.mean(list3))
