@@ -120,47 +120,56 @@ class Event:  # Event class: has variables type, time,
         self.service_time = service_time
 
 
-# '''
 # Calculating lambda based on specified rho range of 0.25 < p < 0.95
 # Each simulation will be ran via these lambda values to then find E[N]
+# Lambda is calculated by p * (C/L)
 # E[N] is the "time-average number of packets in the queue
-#
-# X-Axis: Rho
-# Y-Axis: E[N]
-# '''
-# rho_values = np.arange(0.25, 1, 0.1)
-# lambda_values = []
+# pIDLE is the probability that the queue has no packets in it (idle)
 
-# for i in range(rho_values.__len__()):
-#     lambda_values.append(int(rho_values[i] * (1000000 / 2000)))
-#
-# print("Lambda Values: ", lambda_values)
+rho_values = np.arange(0.25, 1, 0.1)
+lambda_values = []
+
+for i in range(len(rho_values)):
+    lambda_values.append(int(rho_values[i] * (1000000 / 2000)))
+
+print("\nLambda Values: ", lambda_values)
+
 list_of_Ens = []
 list_of_Pidles = []
 
-# TODO: Wrap the simulator in a loop and extract the data.
+# Running the simulator based on different lambda values calculated above.
 
-sim = SimulatorMM1(125, 1000000, 2000)  # rate of lambda = 75 gives rho of .15, lambda = 125 gives rho .25, etc..
+for sims in range(len(rho_values)):
+    sim = SimulatorMM1(lambda_values[sims], 1000000, 2000)
+    sim.run_simulation(1000)
+    list_of_Ens.append(sim.get_en())
+    list_of_Pidles.append(sim.get_pidle())
 
-sim.run_simulation(1000)
-for snapshot in sim.snapshots:
-    print(snapshot)
-E1 = sim.get_en()
-Pidle1 = sim.get_pidle()
+print("\nLambda Values: ", lambda_values)
+print("Rho Values: ", rho_values)
+print("Length Of Rho List", len(rho_values))
+print("List Of AVG Num Of Packets In System: ", list_of_Ens)
+print("List Of pIDLE Values", list_of_Pidles)
 
-# '''
-# Creating graphing statements for the graphs here
-# x is ro and y is avg num of events at a given time
-# We have to calculate lambda over a series of rho (0.35 to 0.85)
-# To do so, lambda = rho(C/L)
-# #import mathplotlib.pyplot as plt
-# x = np.arrange(0.25,0.95,0.1)
-# y = np.zeros((np.size(x), 0.1))
-# #x and y here are placeholders for now, they should take the information provided in queue sim
-# graph = plt.figure(143)#value inside is random, but can never have a duplicate value so generating plots wont cause errors
-# plt.plot(x,y)
-# plt.title('Simulation Results Question 3A')
-# plt.xlabel('Avg Packets in System')
-# plt.ylabel('Traffic Intensity rho(p)')
-# plot.show()
-# '''
+# Creating Graph For E[N]
+# X-Axis: Rho
+# Y-Axis: E[N]
+x = rho_values
+y = list_of_Ens
+plt.plot(x, y)
+plt.title('Simulation Results: Question 3A')
+plt.xlabel('Traffic Intensity p')
+plt.ylabel('Average Number In System E[N]')
+plt.show()
+
+# Creating Graph For pIDLE
+# X-Axis: Rho
+# Y-Axis: pIDLE
+x = rho_values
+y = list_of_Pidles
+plt.plot(x, y)
+plt.title('Simulation Results: Question 3B')
+plt.xlabel('Traffic Intensity p')
+plt.ylabel('Probability The Queue Is Idle pIDLE')
+plt.show()
+
