@@ -148,7 +148,7 @@ class SimulatorMM1K:
                 self.handle_departure_events(current_event)
             pass
         self.event_log.append(["simulation over. total time:", self.total_time])
-        print("simulation run  successfully.")
+        print("simulation run successfully.")
 
     # test_queue() helps us to test the queue by populating
     # it with a specified number of packets,
