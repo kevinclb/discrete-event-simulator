@@ -17,20 +17,20 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         self.total_time = 0
         self.total_packets = 0
 
-    def generate_arrival_events(self):  # generating random arrival events with lambda = self.rate
-        e = Event("arrival", np.random.exponential(1 / self.rate))
+    def generate_arrival_events(self, time):  # generating random arrival events with lambda = self.rate
+        e = Event("arrival", time)
         e.set_length(self.generate_random_length())  # giving them a random length with average 2000 size
         self.events.append(e)  # appending them to the events queue
 
     def generate_random_length(self):
         return np.random.exponential(self.average_packet_length)
 
-    def generate_observation_events(self):
-        self.events.append(Event("observer", np.random.exponential(1 / (self.rate * 5))))
+    def generate_observation_events(self, time):
+        self.events.append(Event("observer", time))
 
     def generate_departure_events(self, events: list):  # generating departure events based upon
         for event in events:  # the computed service time of the existing
-            if event.type == "arrival":  # arrival events,
+            if event.type == "arrival":  # arrival events, 1000000
                 service_time = event.length / self.link_rate  # which is found by dividing L (random packet length)
                 event.set_service_time(service_time)  # by C (the link rate, self.link_rate)
                 if event.time + event.service_time > self.prev_departure_time:  # if this packet's (event) arrival time
@@ -50,7 +50,6 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
 
     def deque_events(self, event):
         if event.type == "arrival":
-            self.total_time += event.time
             self.handle_arrival_event()
         elif event.type == "departure":
             self.handle_departure_event()
@@ -76,10 +75,15 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
              self.departures, self.idle_counter])
         # print("observation event handled")
 
-    def run_simulation(self, number):
-        for i in range(number):
-            self.generate_arrival_events()
-            self.generate_observation_events()
+    def run_simulation(self, time):
+        arrival_time = 0
+        observation_time = 0
+        while arrival_time < time:
+            arrival_time += np.random.exponential(1 / self.rate)
+            self.generate_arrival_events(arrival_time)
+        while observation_time < time:
+            observation_time += np.random.exponential(1 / (5 * self.rate))
+            self.generate_observation_events(observation_time)
         self.events.sort(key=lambda event: event.time, reverse=False)
         self.generate_departure_events(self.events)
         self.events.sort(key=lambda event: event.time, reverse=False)
@@ -140,7 +144,7 @@ list_of_Pidles = []
 
 for sims in range(len(rho_values)):
     sim = SimulatorMM1(lambda_values[sims], 1000000, 2000)
-    sim.run_simulation(1000)
+    sim.run_simulation(200)
     list_of_Ens.append(sim.get_en())
     list_of_Pidles.append(sim.get_pidle())
 
