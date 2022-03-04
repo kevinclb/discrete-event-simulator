@@ -57,11 +57,15 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
                 self.handle_arrival_event()
             else:
                 self.drops += 1
-                for i in range(len(self.events)-1):
-                    if self.events[i].length == event.length and self.events[i].type == "departure":
-                        self.events.pop(i)
+                self.packet_lengths.append(event.length)
+                # for i in range(len(self.events)-1):
+                #     if self.events[i].length == event.length and self.events[i].type == "departure":
+                #         self.events.pop(i)
         elif event.type == "departure":
-            self.handle_departure_event()
+            if self.packet_lengths.__contains__(event.length):
+                pass
+            else:
+                self.handle_departure_event()
         elif event.type == "observer":
             self.handle_observation_event()
         else:
@@ -182,34 +186,34 @@ list_of_pLOSS50 = []
 
 for sims in range(len(rho_values)):
     sim = SimulatorMM1(transmission_rate=lambda_values[sims], link_rate=1000000, buffer_limit=k_values[0])
-    sim.run_simulation(time=25)
+    sim.run_simulation(time=100)
     list_of_EN10.append(sim.get_en())
     list_of_pLOSS10.append(sim.get_ploss())
 
 print("List Of AVG Num Of Packets In System For K = 10: ", list_of_EN10)
-print("List Of pIDLE Values For K = 10: ", list_of_pLOSS10)
+print("List Of Ploss Values For K = 10: ", list_of_pLOSS10)
 
 # Running the simulator for k = 25 based on different lambda values calculated above.
 
 for sims in range(len(rho_values)):
     sim = SimulatorMM1(transmission_rate=lambda_values[sims], link_rate=1000000, buffer_limit=k_values[1])
-    sim.run_simulation(25)
+    sim.run_simulation(100)
     list_of_EN25.append(sim.get_en())
     list_of_pLOSS25.append(sim.get_ploss())
 
 print("List Of AVG Num Of Packets In System For K = 25: ", list_of_EN25)
-print("List Of pIDLE Values For K = 25: ", list_of_pLOSS25)
+print("List Of Ploss Values For K = 25: ", list_of_pLOSS25)
 
 # Running the simulator for k = 50 based on different lambda values calculated above.
 
 for sims in range(len(rho_values)):
     sim = SimulatorMM1(transmission_rate=lambda_values[sims], link_rate=1000000, buffer_limit=k_values[2])
-    sim.run_simulation(25)
+    sim.run_simulation(100)
     list_of_EN50.append(sim.get_en())
     list_of_pLOSS50.append(sim.get_ploss())
 
 print("List Of AVG Num Of Packets In System For K = 50: ", list_of_EN50)
-# print("List Of pIDLE Values For K = 50: ", list_of_pLOSS50)
+print("List Of Ploss Values For K = 50: ", list_of_pLOSS50)
 
 # Creating Graph For E[N]
 # X-Axis: Rho
