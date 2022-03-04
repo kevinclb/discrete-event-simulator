@@ -120,7 +120,7 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         return self.idle_counter / self.observations
 
     def get_ploss(self):
-        return self.drops / self.observations
+        return self.drops / self.total_packets
 
 
     def tabulate_results(self):
@@ -159,7 +159,8 @@ class Event:  # Event class: has variables type, time,
 # X-Axis: Rho
 # Y-Axis: E[N]
 #
-# -----------------Question 6----------------- Calculating lambda based on specified rho range of 0.5 < p < 1.5 Each
+# -----------------Question 6-----------------
+# Calculating lambda based on specified rho range of 0.5 < p < 1.5 Each
 # simulation will be ran via these lambda values to then find E[N] Lambda is calculated by p * (C/L) E[N] is the
 # "time-average number of packets in the queue pLOSS the ratio of the total number of packets lost due to buffer full
 # condition to the total number of generated packets.
@@ -228,5 +229,21 @@ plt.plot(x, y3, label='K = %s' % k_values[2])
 plt.title('Simulation Results: Question 6A')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Average Number In System E[N]')
+plt.legend()
+plt.show()
+
+# Creating Graph For pLOSS
+# X-Axis: Rho
+# Y-Axis: pLOSS
+x = rho_values
+y1 = list_of_pLOSS10
+y2 = list_of_pLOSS25
+y3 = list_of_pLOSS50
+plt.plot(x, y1, label = 'K = %s'% k_values[0])
+plt.plot(x, y2, label = 'K = %s'% k_values[1])
+plt.plot(x, y3, label = 'K = %s'% k_values[2])
+plt.title('Simulation Results: Question 6B')
+plt.xlabel('Traffic Intensity p')
+plt.ylabel('Probability Of Packet Loss pLoss')
 plt.legend()
 plt.show()
