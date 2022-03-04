@@ -123,8 +123,9 @@ class Event:  # Event class: has variables type, time,
         self.service_time = service_time
 
 
+# -----------------Question 3-----------------
 # Calculating lambda based on specified rho range of 0.25 < p < 0.95
-# Each simulation will be ran via these lambda values to then find E[N]
+# Each simulation will be ran via these lambda values to then find E[N] & pIDLE
 # Lambda is calculated by p * (C/L)
 # E[N] is the "time-average number of packets in the queue
 # pIDLE is the probability that the queue has no packets in it (idle)
@@ -148,7 +149,6 @@ for sims in range(len(rho_values)):
     list_of_Ens.append(sim.get_en())
     list_of_Pidles.append(sim.get_pidle())
 
-print("\nLambda Values: ", lambda_values)
 print("Rho Values: ", rho_values)
 print("Length Of Rho List", len(rho_values))
 print("List Of AVG Num Of Packets In System: ", list_of_Ens)
@@ -175,4 +175,29 @@ plt.title('Simulation Results: Question 3B')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Probability The Queue Is Idle pIDLE')
 plt.show()
+
+# -----------------Question 4-----------------
+# Calculating lambda based on rho = 1.2
+# The simulation will be ran via this lambda values to then find E[N] & pIDLE to compare to question 3
+# Lambda is calculated by p * (C/L)
+# E[N] is the "time-average number of packets in the queue
+# pIDLE is the probability that the queue has no packets in it (idle)
+
+Q4_Lambda = int(1.2 * (1000000 / 2000))
+
+EN_Q4 = 0
+pIDLE_Q4 = 0
+
+sim = SimulatorMM1(Q4_Lambda, 1000000, 2000)
+sim.run_simulation(200)
+EN_Q4 = sim.get_en()
+pIDLE_Q4 = sim.get_pidle()
+
+print("\nQuestion 3: Lambda Values: ", lambda_values)
+print("Question 3: AVG Num Of Packets In System: ", list_of_Ens)
+print("Question 3: pIDLE Values", list_of_Pidles)
+print("\nQuestion 4: Lambda Value For Rho = 1.2: ", Q4_Lambda)
+print("Question 4: AVG Num Of Packets In System For p = 1.2: ", EN_Q4)
+print("Question 4: pIDLE Values", pIDLE_Q4)
+
 

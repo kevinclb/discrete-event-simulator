@@ -158,12 +158,14 @@ class Event:  # Event class: has variables type, time,
 # Creating Graph For E[N]
 # X-Axis: Rho
 # Y-Axis: E[N]
-#
+
 # -----------------Question 6-----------------
-# Calculating lambda based on specified rho range of 0.5 < p < 1.5 Each
-# simulation will be ran via these lambda values to then find E[N] Lambda is calculated by p * (C/L) E[N] is the
-# "time-average number of packets in the queue pLOSS the ratio of the total number of packets lost due to buffer full
-# condition to the total number of generated packets.
+# Calculating lambda based on specified rho range of 0.5 < p < 1.5
+# Each simulation will be ran via these lambda values to then find E[N] & pLOSS
+# Lambda is calculated by p * (C/L)
+# E[N] is the "time-average number of packets in the queue
+# pLOSS is the ratio of the total number of packets lost due to buffer full condition...
+# to the total number of generated packets.
 
 rho_values = np.arange(0.5, 1.5, 0.1)
 lambda_values = []
