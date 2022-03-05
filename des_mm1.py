@@ -159,7 +159,9 @@ print("List Of pIDLE Values", list_of_Pidles)
 # Y-Axis: E[N]
 x = rho_values
 y = list_of_Ens
-plt.plot(x, y)
+plt.plot(x, y, marker = '^')
+plt.xticks(np.arange(x[0], x[7]+0.1, 0.1))
+plt.yticks([])
 plt.title('Simulation Results: Question 3A')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Average Number In System E[N]')
@@ -170,7 +172,9 @@ plt.show()
 # Y-Axis: pIDLE
 x = rho_values
 y = list_of_Pidles
-plt.plot(x, y)
+plt.plot(x, y, marker = '^')
+plt.xticks(np.arange(x[0], x[7]+0.1, 0.1))
+plt.yticks([])
 plt.title('Simulation Results: Question 3B')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Probability The Queue Is Idle pIDLE')
