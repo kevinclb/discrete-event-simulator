@@ -120,7 +120,7 @@ class SimulatorMM1:  # The answer to question 2 is this simulator
         return self.idle_counter / self.observations
 
     def get_ploss(self):
-        return self.drops / self.total_packets
+        return self.drops / (self.drops + self.departures)
 
 
     def tabulate_results(self):
@@ -167,6 +167,7 @@ class Event:  # Event class: has variables type, time,
 # pLOSS is the ratio of the total number of packets lost due to buffer full condition...
 # to the total number of generated packets.
 
+
 rho_values = np.arange(0.5, 1.5, 0.1)
 lambda_values = []
 
@@ -194,7 +195,10 @@ for sims in range(len(rho_values)):
     list_of_pLOSS10.append(sim.get_ploss())
 
 print("List Of AVG Num Of Packets In System For K = 10: ", list_of_EN10)
+print("Total Packets Dropped: ", sim.drops)
+print("Total Packets Departed: ", sim.departures)
 print("List Of Ploss Values For K = 10: ", list_of_pLOSS10)
+
 
 # Running the simulator for k = 25 based on different lambda values calculated above.
 
@@ -204,8 +208,10 @@ for sims in range(len(rho_values)):
     list_of_EN25.append(sim.get_en())
     list_of_pLOSS25.append(sim.get_ploss())
 
-print("List Of AVG Num Of Packets In System For K = 25: ", list_of_EN25)
-print("List Of Ploss Values For K = 25: ", list_of_pLOSS25)
+print("List Of AVG Num Of Packets In System For K = 25: ", list_of_EN10)
+print("Total Packets Dropped: ", sim.drops)
+print("Total Packets Departed: ", sim.departures)
+print("List Of Ploss Values For K = 25: ", list_of_pLOSS10)
 
 # Running the simulator for k = 50 based on different lambda values calculated above.
 
@@ -215,19 +221,23 @@ for sims in range(len(rho_values)):
     list_of_EN50.append(sim.get_en())
     list_of_pLOSS50.append(sim.get_ploss())
 
-print("List Of AVG Num Of Packets In System For K = 50: ", list_of_EN50)
-print("List Of Ploss Values For K = 50: ", list_of_pLOSS50)
+print("List Of AVG Num Of Packets In System For K = 50: ", list_of_EN10)
+print("Total Packets Dropped: ", sim.drops)
+print("Total Packets Departed: ", sim.departures)
+print("List Of Ploss Values For K = 50: ", list_of_pLOSS10)
 
 # Creating Graph For E[N]
 # X-Axis: Rho
-# Y-Axis: E[N]
+# Y-Axis: E[N] @ every K
 x = rho_values
 y1 = list_of_EN10
 y2 = list_of_EN25
 y3 = list_of_EN50
-plt.plot(x, y1, label='K = %s' % k_values[0])
-plt.plot(x, y2, label='K = %s' % k_values[1])
-plt.plot(x, y3, label='K = %s' % k_values[2])
+plt.plot(x, y1, marker = '^', label = 'K = %s'% k_values[0])
+plt.plot(x, y2, marker = 'o', label = 'K = %s'% k_values[1])
+plt.plot(x, y3, marker = '*', label = 'K = %s'% k_values[2])
+plt.xticks(np.arange(x[0], x[9]+0.2, 0.1))
+plt.yticks([])
 plt.title('Simulation Results: Question 6A')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Average Number In System E[N]')
@@ -236,14 +246,16 @@ plt.show()
 
 # Creating Graph For pLOSS
 # X-Axis: Rho
-# Y-Axis: pLOSS
+# Y-Axis: pLOSS @ every K
 x = rho_values
 y1 = list_of_pLOSS10
 y2 = list_of_pLOSS25
 y3 = list_of_pLOSS50
-plt.plot(x, y1, label = 'K = %s'% k_values[0])
-plt.plot(x, y2, label = 'K = %s'% k_values[1])
-plt.plot(x, y3, label = 'K = %s'% k_values[2])
+plt.plot(x, y1, marker = '^', label = 'K = %s'% k_values[0])
+plt.plot(x, y2, marker = 'o', label = 'K = %s'% k_values[1])
+plt.plot(x, y3, marker = '*', label = 'K = %s'% k_values[2])
+plt.xticks(np.arange(x[0], x[9]+0.2, 0.1))
+plt.yticks([])
 plt.title('Simulation Results: Question 6B')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Probability Of Packet Loss pLoss')
