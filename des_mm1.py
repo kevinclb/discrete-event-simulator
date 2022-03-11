@@ -177,7 +177,7 @@ plt.xticks(np.arange(0.2, x[7]+0.1, 0.1))
 plt.yticks(np.arange(0, y[0]+0.1, 0.1))
 plt.title('Simulation Results: Question 3B')
 plt.xlabel('Traffic Intensity p')
-plt.ylabel('Probability The Queue Is Idle pIDLE')
+plt.ylabel('Proportion Of Time The Server Is Idle pIDLE')
 plt.show()
 
 # -----------------Question 4-----------------
