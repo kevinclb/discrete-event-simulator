@@ -208,10 +208,10 @@ for sims in range(len(rho_values)):
     list_of_EN25.append(sim.get_en())
     list_of_pLOSS25.append(sim.get_ploss())
 
-print("List Of AVG Num Of Packets In System For K = 25: ", list_of_EN10)
+print("List Of AVG Num Of Packets In System For K = 25: ", list_of_EN25)
 print("Total Packets Dropped: ", sim.drops)
 print("Total Packets Departed: ", sim.departures)
-print("List Of Ploss Values For K = 25: ", list_of_pLOSS10)
+print("List Of Ploss Values For K = 25: ", list_of_pLOSS25)
 
 # Running the simulator for k = 50 based on different lambda values calculated above.
 
@@ -221,10 +221,10 @@ for sims in range(len(rho_values)):
     list_of_EN50.append(sim.get_en())
     list_of_pLOSS50.append(sim.get_ploss())
 
-print("List Of AVG Num Of Packets In System For K = 50: ", list_of_EN10)
+print("List Of AVG Num Of Packets In System For K = 50: ", list_of_EN50)
 print("Total Packets Dropped: ", sim.drops)
 print("Total Packets Departed: ", sim.departures)
-print("List Of Ploss Values For K = 50: ", list_of_pLOSS10)
+print("List Of Ploss Values For K = 50: ", list_of_pLOSS50)
 
 # Creating Graph For E[N]
 # X-Axis: Rho
@@ -237,7 +237,7 @@ plt.plot(x, y1, marker = '^', label = 'K = %s'% k_values[0])
 plt.plot(x, y2, marker = 'o', label = 'K = %s'% k_values[1])
 plt.plot(x, y3, marker = '*', label = 'K = %s'% k_values[2])
 plt.xticks(np.arange(x[0], x[9]+0.2, 0.1))
-plt.yticks([])
+plt.yticks(np.arange(0, y3[9]+1, 5))
 plt.title('Simulation Results: Question 6A')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Average Number In System E[N]')
@@ -255,7 +255,7 @@ plt.plot(x, y1, marker = '^', label = 'K = %s'% k_values[0])
 plt.plot(x, y2, marker = 'o', label = 'K = %s'% k_values[1])
 plt.plot(x, y3, marker = '*', label = 'K = %s'% k_values[2])
 plt.xticks(np.arange(x[0], x[9]+0.2, 0.1))
-plt.yticks([])
+plt.yticks(np.arange(0, y3[9]+0.1, 0.1))
 plt.title('Simulation Results: Question 6B')
 plt.xlabel('Traffic Intensity p')
 plt.ylabel('Probability Of Packet Loss pLoss')
